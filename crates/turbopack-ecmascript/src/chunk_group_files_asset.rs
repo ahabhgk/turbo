@@ -25,6 +25,7 @@ use crate::{
 #[turbo_tasks::value(shared)]
 pub struct ChunkGroupFilesAsset {
     pub asset: ChunkableAssetVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     pub chunking_context: ChunkingContextVc,
     pub base_path: FileSystemPathVc,
     pub runtime_entries: Option<EcmascriptChunkPlaceablesVc>,

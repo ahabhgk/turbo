@@ -24,6 +24,7 @@ use crate::{embed::CssEmbeddableVc, ImportAssetReferenceVc};
 
 #[turbo_tasks::value]
 pub struct CssChunk {
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     context: ChunkingContextVc,
     main_entries: CssChunkPlaceablesVc,
 }

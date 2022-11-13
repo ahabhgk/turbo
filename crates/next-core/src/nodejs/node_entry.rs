@@ -8,6 +8,7 @@ use turbopack_ecmascript::EcmascriptModuleAssetVc;
 #[turbo_tasks::value(shared)]
 pub struct NodeRenderingEntry {
     pub module: EcmascriptModuleAssetVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     pub chunking_context: ChunkingContextVc,
     pub intermediate_output_path: FileSystemPathVc,
 }

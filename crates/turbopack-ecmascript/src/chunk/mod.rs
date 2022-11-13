@@ -51,6 +51,7 @@ use crate::{
 
 #[turbo_tasks::value]
 pub struct EcmascriptChunk {
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     context: ChunkingContextVc,
     main_entries: EcmascriptChunkPlaceablesVc,
     omit_entries: Option<EcmascriptChunkPlaceablesVc>,
@@ -1058,6 +1059,7 @@ struct EcmascriptChunkContentEvaluate {
 
 #[turbo_tasks::value]
 pub struct EcmascriptChunkContext {
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     context: ChunkingContextVc,
 }
 

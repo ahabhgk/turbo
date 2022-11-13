@@ -136,7 +136,7 @@ async fn compute_update_stream(
 
 #[turbo_tasks::value(serialization = "none", eq = "manual", cell = "new")]
 struct VersionState {
-    #[turbo_tasks(debug_ignore)]
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     inner: Mutex<(VersionVc, Option<Invalidator>)>,
 }
 

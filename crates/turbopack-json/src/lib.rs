@@ -80,6 +80,7 @@ impl EcmascriptChunkPlaceable for JsonModuleAsset {
 #[turbo_tasks::value]
 struct JsonChunkItem {
     module: JsonModuleAssetVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     context: ChunkingContextVc,
 }
 

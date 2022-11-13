@@ -617,6 +617,7 @@ impl ValueToString for DiskFileSystem {
 #[turbo_tasks::value]
 #[derive(Debug, Clone)]
 pub struct FileSystemPath {
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     pub fs: FileSystemVc,
     pub path: String,
 }
@@ -1181,7 +1182,7 @@ pub enum LinkContent {
 #[derive(Clone)]
 pub struct File {
     meta: FileMeta,
-    #[turbo_tasks(debug_ignore)]
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     content: Rope,
 }
 

@@ -27,6 +27,7 @@ use crate::next_client_component::in_chunking_context_asset::InChunkingContextAs
 pub struct WithChunksAsset {
     pub asset: EcmascriptChunkPlaceableVc,
     pub server_root: FileSystemPathVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     pub chunking_context: ChunkingContextVc,
 }
 

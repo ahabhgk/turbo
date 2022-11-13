@@ -73,9 +73,12 @@ pub enum EcmascriptModuleAssetType {
 #[derive(Clone, Copy)]
 pub struct EcmascriptModuleAsset {
     pub source: AssetVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     pub context: AssetContextVc,
     pub ty: EcmascriptModuleAssetType,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     pub transforms: EcmascriptInputTransformsVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     pub environment: EnvironmentVc,
 }
 
@@ -134,6 +137,7 @@ impl Asset for EcmascriptModuleAsset {
 
     #[turbo_tasks::function]
     async fn references(self_vc: EcmascriptModuleAssetVc) -> Result<AssetReferencesVc> {
+        // dbg!(self_vc.as_value_debug().dbg().await?);
         Ok(self_vc.analyze().await?.references)
     }
 }
@@ -182,6 +186,7 @@ impl ResolveOrigin for EcmascriptModuleAsset {
 #[turbo_tasks::value]
 struct ModuleChunkItem {
     module: EcmascriptModuleAssetVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     context: ChunkingContextVc,
 }
 

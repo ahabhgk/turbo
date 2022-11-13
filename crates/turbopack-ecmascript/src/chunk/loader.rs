@@ -36,6 +36,7 @@ use crate::{
 /// import appears in.
 #[turbo_tasks::value]
 pub struct ManifestLoaderItem {
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     context: ChunkingContextVc,
     manifest: ManifestChunkAssetVc,
 }
@@ -146,6 +147,7 @@ __turbopack_export_value__((__turbopack_import__) => {{
 #[turbo_tasks::value(shared)]
 pub struct ManifestChunkAsset {
     pub asset: ChunkableAssetVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     pub chunking_context: ChunkingContextVc,
 }
 

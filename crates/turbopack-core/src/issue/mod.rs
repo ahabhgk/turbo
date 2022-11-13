@@ -547,7 +547,7 @@ impl IssueSourceVc {
 #[derive(Clone, Debug)]
 pub struct PlainAsset {
     pub path: FileSystemPathReadRef,
-    #[turbo_tasks(debug_ignore)]
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     pub content: FileContentReadRef,
 }
 

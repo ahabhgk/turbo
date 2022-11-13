@@ -83,6 +83,7 @@ impl EcmascriptChunkPlaceable for WithClientChunksAsset {
 
 #[turbo_tasks::value]
 struct WithClientChunksChunkItem {
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     context: ChunkingContextVc,
     inner: WithClientChunksAssetVc,
 }

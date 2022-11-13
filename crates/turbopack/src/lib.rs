@@ -208,7 +208,9 @@ async fn module(source: AssetVc, context: ModuleAssetContextVc) -> Result<AssetV
 pub struct ModuleAssetContext {
     transitions: TransitionsByNameVc,
     environment: EnvironmentVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     module_options_context: ModuleOptionsContextVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     resolve_options_context: ResolveOptionsContextVc,
     transition: Option<TransitionVc>,
 }

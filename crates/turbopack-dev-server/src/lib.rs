@@ -31,7 +31,8 @@ use hyper::{
 use mime_guess::mime;
 use source::{Body, Bytes};
 use turbo_tasks::{
-    run_once, trace::TraceRawVcs, util::FormatDuration, RawVc, TransientValue, TurboTasksApi, Value,
+    debug::ValueDebug, run_once, trace::TraceRawVcs, util::FormatDuration, RawVc, TransientValue,
+    TurboTasksApi, Value,
 };
 use turbo_tasks_fs::{FileContent, FileContentReadRef};
 use turbopack_cli_utils::issue::{ConsoleUi, ConsoleUiVc};

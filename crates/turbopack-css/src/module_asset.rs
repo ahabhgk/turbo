@@ -105,6 +105,7 @@ impl ResolveOrigin for ModuleCssModuleAsset {
 #[turbo_tasks::value]
 struct ModuleChunkItem {
     module: CssModuleAssetVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     context: ChunkingContextVc,
 }
 
@@ -135,6 +136,7 @@ impl ChunkItem for ModuleChunkItem {
 #[turbo_tasks::value]
 struct CssProxyToCssAssetReference {
     module: CssModuleAssetVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     context: ChunkingContextVc,
 }
 

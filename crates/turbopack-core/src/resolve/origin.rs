@@ -53,6 +53,7 @@ impl ResolveOriginVc {
 /// A resolve origin for some path and context without additional modifications.
 #[turbo_tasks::value]
 pub struct PlainResolveOrigin {
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     context: AssetContextVc,
     origin_path: FileSystemPathVc,
 }

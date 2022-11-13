@@ -355,6 +355,21 @@ pub async fn start_server(options: &DevServerOptions) -> Result<()> {
 
     #[cfg(feature = "tokio_console")]
     console_subscriber::init();
+
+    #[cfg(feature = "tracing")]
+    use tracing_chrome::ChromeLayerBuilder;
+    #[cfg(feature = "tracing")]
+    use tracing_subscriber::{fmt, prelude::*, EnvFilter};
+
+    #[cfg(feature = "tracing")]
+    let (chrome_layer, _guard) = ChromeLayerBuilder::new().build();
+    #[cfg(feature = "tracing")]
+    tracing_subscriber::registry()
+        .with(chrome_layer)
+        .with(fmt::layer())
+        .with(EnvFilter::from_default_env())
+        .init();
+
     register();
 
     let dir = options

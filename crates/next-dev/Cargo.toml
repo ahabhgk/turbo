@@ -27,6 +27,12 @@ tokio_console = [
   "tokio/tracing",
   "turbo-tasks/tokio_tracing",
 ]
+tracing = [
+  "dep:tracing-subscriber",
+  "dep:tracing-chrome",
+  "tokio/tracing",
+  "turbo-tasks/tokio_tracing",
+]
 
 [dependencies]
 anyhow = "1.0.47"
@@ -40,6 +46,8 @@ portpicker = "0.1.1"
 serde = "1.0.136"
 serde_json = "1.0.85"
 tokio = { version = "1.11.0", features = ["full"] }
+tracing-chrome = { version = "0.7.0", optional = true }
+tracing-subscriber = { version = "0.3.16", optional = true }
 turbo-malloc = { path = "../turbo-malloc" }
 turbo-tasks = { path = "../turbo-tasks" }
 turbo-tasks-fs = { path = "../turbo-tasks-fs" }

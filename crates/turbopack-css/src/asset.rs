@@ -34,7 +34,9 @@ use crate::{
 #[derive(Clone)]
 pub struct CssModuleAsset {
     pub source: AssetVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     pub context: AssetContextVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     pub transforms: CssInputTransformsVc,
     pub ty: CssModuleAssetType,
 }
@@ -136,6 +138,7 @@ impl ResolveOrigin for CssModuleAsset {
 #[turbo_tasks::value]
 struct ModuleChunkItem {
     module: CssModuleAssetVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     context: ChunkingContextVc,
 }
 

@@ -103,9 +103,16 @@ impl ChunkGroupVc {
     pub async fn chunks(self) -> Result<ChunksVc> {
         let mut chunks = IndexSet::new();
 
+        // entry chunk: EcmascriptChunk {
+        //   chunking_context,
+        //   main_entries: [EcmascriptChunkPlaceable(""), "dev/bootstrap.ts",
+        // "src/index.jsx"],   omit_entries: None,
+        //   evaluate: Some(EcmascriptChunkEvaluate { main_entries, chunk_group: None
+        // }), }
         let mut queue = vec![self.await?.entry];
         while let Some(chunk) = queue.pop() {
             let chunk = chunk.resolve().await?;
+            // dbg!(chunk.dbg().await?);
             if chunks.insert(chunk) {
                 for r in chunk.references().await?.iter() {
                     if let Some(pc) = ParallelChunkReferenceVc::resolve_from(r).await? {
@@ -349,6 +356,7 @@ async fn chunk_content_internal<I: FromChunkableAsset>(
     let mut queue = VecDeque::new();
 
     let chunk_item = I::from_asset(context, entry).await?.unwrap();
+    // dbg!(chunk_item.references().as_value_debug().dbg().await?);
     queue.push_back(ChunkContentWorkItem::AssetReferences(
         chunk_item.references(),
     ));

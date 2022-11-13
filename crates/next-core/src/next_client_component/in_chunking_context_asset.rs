@@ -13,6 +13,7 @@ use turbopack_core::{
 #[turbo_tasks::value(shared)]
 pub struct InChunkingContextAsset {
     pub asset: EcmascriptChunkPlaceableVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     pub chunking_context: ChunkingContextVc,
 }
 

@@ -23,9 +23,11 @@ use turbopack_ecmascript::{
 #[turbo_tasks::value]
 pub struct ProcessEnvAsset {
     /// The root path which we can construct our env asset path.
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     root: FileSystemPathVc,
 
     /// A HashMap filled with the env key/values.
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     env: ProcessEnvVc,
 }
 
@@ -86,6 +88,7 @@ impl EcmascriptChunkPlaceable for ProcessEnvAsset {
 
 #[turbo_tasks::value]
 struct ProcessEnvChunkItem {
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     context: ChunkingContextVc,
     inner: ProcessEnvAssetVc,
 }

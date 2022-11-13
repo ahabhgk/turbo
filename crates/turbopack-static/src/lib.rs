@@ -33,6 +33,7 @@ use turbopack_ecmascript::{
 #[derive(Clone)]
 pub struct StaticModuleAsset {
     pub source: AssetVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     pub context: AssetContextVc,
 }
 
@@ -115,6 +116,7 @@ impl CssEmbeddable for StaticModuleAsset {
 
 #[turbo_tasks::value]
 struct StaticAsset {
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     context: ChunkingContextVc,
     source: AssetVc,
 }
@@ -156,6 +158,7 @@ impl Asset for StaticAsset {
 #[turbo_tasks::value]
 struct ModuleChunkItem {
     module: StaticModuleAssetVc,
+    #[turbo_tasks(debug_ignore, trace_ignore)]
     context: ChunkingContextVc,
     static_asset: StaticAssetVc,
 }
