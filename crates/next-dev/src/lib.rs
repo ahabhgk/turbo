@@ -265,7 +265,7 @@ async fn source(
     server_component_externals: Vec<String>,
 ) -> Result<ContentSourceVc> {
     let console_ui = (*console_ui).clone().cell();
-    let output_fs = output_fs(&project_dir, console_ui);
+    // let output_fs = output_fs(&project_dir, console_ui);
     let fs = project_fs(&root_dir, console_ui);
     let project_relative = project_dir.strip_prefix(&root_dir).unwrap();
     let project_relative = project_relative
@@ -275,7 +275,7 @@ async fn source(
 
     let env = load_env(project_path);
 
-    let output_root = output_fs.root().join("/.next/server");
+    // let output_root = output_fs.root().join("/.next/server");
 
     let dev_server_fs = DevServerFileSystemVc::new().as_file_system();
     let dev_server_root = dev_server_fs.root();
@@ -291,21 +291,21 @@ async fn source(
         eager_compile,
         &browserslist_query,
     );
-    let rendered_source = create_server_rendered_source(
-        project_path,
-        output_root.join("pages"),
-        dev_server_root,
-        env,
-        &browserslist_query,
-    );
-    let app_source = create_app_source(
-        project_path,
-        output_root.join("app"),
-        dev_server_root,
-        env,
-        &browserslist_query,
-        StringsVc::cell(server_component_externals),
-    );
+    // let rendered_source = create_server_rendered_source(
+    //     project_path,
+    //     output_root.join("pages"),
+    //     dev_server_root,
+    //     env,
+    //     &browserslist_query,
+    // );
+    // let app_source = create_app_source(
+    //     project_path,
+    //     output_root.join("app"),
+    //     dev_server_root,
+    //     env,
+    //     &browserslist_query,
+    //     StringsVc::cell(server_component_externals),
+    // );
     let viz = turbo_tasks_viz::TurboTasksSource {
         turbo_tasks: turbo_tasks.into(),
     }
@@ -314,7 +314,8 @@ async fn source(
     let static_source =
         StaticAssetsContentSourceVc::new(String::new(), project_path.join("public")).into();
     let main_source = CombinedContentSource {
-        sources: vec![static_source, app_source, rendered_source, web_source],
+        // sources: vec![static_source, app_source, rendered_source, web_source],
+        sources: vec![static_source, web_source],
     }
     .cell();
     let introspect = IntrospectionSource {
@@ -322,15 +323,16 @@ async fn source(
     }
     .cell()
     .into();
-    let source_map_trace = NextSourceMapTraceContentSourceVc::new(main_source.into()).into();
+    // let source_map_trace =
+    // NextSourceMapTraceContentSourceVc::new(main_source.into()).into();
     let source = RouterContentSource {
         routes: vec![
             ("__turbopack__/".to_string(), introspect),
             ("__turbo_tasks__/".to_string(), viz),
-            (
-                "__nextjs_original-stack-frame".to_string(),
-                source_map_trace,
-            ),
+            // (
+            //     "__nextjs_original-stack-frame".to_string(),
+            //     source_map_trace,
+            // ),
         ],
         fallback: main_source.into(),
     }
@@ -339,7 +341,7 @@ async fn source(
 
     handle_issues(dev_server_fs, console_ui).await?;
     handle_issues(web_source, console_ui).await?;
-    handle_issues(rendered_source, console_ui).await?;
+    // handle_issues(rendered_source, console_ui).await?;
 
     Ok(source)
 }

@@ -31,7 +31,7 @@ pub async fn create_web_entry_source(
     browserslist_query: &str,
 ) -> Result<ContentSourceVc> {
     // "turbo/demo"
-    let project_root = wrap_with_next_js_fs(project_root);
+    // let project_root = wrap_with_next_js_fs(project_root);
 
     let ty = Value::new(ContextType::Other);
     // make context: {
