@@ -980,8 +980,9 @@ impl Asset for EcmascriptChunk {
             )
             .into(),
         );
-
-        Ok(AssetReferencesVc::cell(references))
+        let r = AssetReferencesVc::cell(references);
+        dbg!(r.as_value_debug().dbg().await?);
+        Ok(r)
     }
 
     #[turbo_tasks::function]
@@ -1141,7 +1142,9 @@ pub trait EcmascriptChunkItem: ChunkItem + ValueToString {
 impl FromChunkableAsset for EcmascriptChunkItemVc {
     async fn from_asset(context: ChunkingContextVc, asset: AssetVc) -> Result<Option<Self>> {
         if let Some(placeable) = EcmascriptChunkPlaceableVc::resolve_from(asset).await? {
-            return Ok(Some(placeable.as_chunk_item(context)));
+            let item = placeable.as_chunk_item(context);
+            dbg!(item.dbg().await?);
+            return Ok(Some(item));
         }
         Ok(None)
     }

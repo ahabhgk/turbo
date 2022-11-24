@@ -4,10 +4,11 @@ pub mod optimize;
 use std::{collections::VecDeque, fmt::Debug};
 
 use anyhow::{anyhow, Result};
+use futures::StreamExt;
 use indexmap::IndexSet;
 use serde::{Deserialize, Serialize};
 use turbo_tasks::{
-    debug::ValueDebugFormat,
+    debug::{ValueDebug, ValueDebugFormat},
     primitives::{BoolVc, StringVc},
     trace::TraceRawVcs,
     ValueToString, ValueToStringVc,
@@ -112,13 +113,17 @@ impl ChunkGroupVc {
         let mut queue = vec![self.await?.entry];
         while let Some(chunk) = queue.pop() {
             let chunk = chunk.resolve().await?;
-            // dbg!(chunk.dbg().await?);
+            dbg!(chunk.dbg().await?);
             if chunks.insert(chunk) {
+                // dbg!(chunk.references().as_value_debug().dbg().await?);
                 for r in chunk.references().await?.iter() {
                     if let Some(pc) = ParallelChunkReferenceVc::resolve_from(r).await? {
+                        dbg!(pc.dbg().await?, pc.is_loaded_in_parallel().await?);
                         if *pc.is_loaded_in_parallel().await? {
                             let result = r.resolve_reference();
+                            dbg!(result.as_value_debug().dbg().await?);
                             for a in result.primary_assets().await?.iter() {
+                                dbg!(a.dbg().await?);
                                 if let Some(chunk) = ChunkVc::resolve_from(a).await? {
                                     queue.push(chunk);
                                 }
@@ -356,7 +361,7 @@ async fn chunk_content_internal<I: FromChunkableAsset>(
     let mut queue = VecDeque::new();
 
     let chunk_item = I::from_asset(context, entry).await?.unwrap();
-    // dbg!(chunk_item.references().as_value_debug().dbg().await?);
+    dbg!(chunk_item.references().as_value_debug().dbg().await?);
     queue.push_back(ChunkContentWorkItem::AssetReferences(
         chunk_item.references(),
     ));
@@ -380,6 +385,7 @@ async fn chunk_content_internal<I: FromChunkableAsset>(
                 for r in item.await?.iter() {
                     if let Some(pc) = ChunkableAssetReferenceVc::resolve_from(r).await? {
                         if let Some(chunking_type) = *pc.chunking_type(context).await? {
+                            dbg!(r.as_value_to_string().to_string().await?);
                             queue.push_back(ChunkContentWorkItem::Assets {
                                 assets: r.resolve_reference().primary_assets(),
                                 reference: *r,
@@ -396,6 +402,11 @@ async fn chunk_content_internal<I: FromChunkableAsset>(
                 reference,
                 chunking_type,
             } => {
+                dbg!(
+                    assets.as_value_debug().dbg().await?,
+                    reference.as_value_to_string().to_string().await?,
+                    chunking_type.value_debug_format().try_to_string().await?
+                );
                 // It's important to temporary store these results in these variables
                 // so that we can cancel to complete list of assets by that references together
                 // and fallback to an external reference completely
@@ -440,6 +451,7 @@ async fn chunk_content_internal<I: FromChunkableAsset>(
                         }
                         ChunkingType::Parallel => {
                             let chunk = chunkable_asset.as_chunk(context);
+                            dbg!(chunk.dbg().await?);
                             inner_chunks.push(chunk);
                         }
                         ChunkingType::PlacedOrParallel => {
@@ -453,6 +465,7 @@ async fn chunk_content_internal<I: FromChunkableAsset>(
                             }
 
                             let chunk = chunkable_asset.as_chunk(context);
+                            dbg!(chunk.dbg().await?);
                             inner_chunks.push(chunk);
                         }
                         ChunkingType::Separate => {

@@ -1,6 +1,8 @@
 pub(crate) mod optimize;
 mod writer;
 
+use std::io::Write;
+
 use anyhow::{anyhow, Result};
 use indexmap::IndexSet;
 use turbo_tasks::{primitives::StringVc, TryJoinIterExt, ValueToString, ValueToStringVc};
@@ -14,13 +16,15 @@ use turbopack_core::{
         Chunk, ChunkContentResult, ChunkGroupReferenceVc, ChunkGroupVc, ChunkItem, ChunkItemVc,
         ChunkReferenceVc, ChunkVc, ChunkableAssetVc, ChunkingContextVc, FromChunkableAsset,
     },
+    code_builder::{CodeBuilder, CodeVc},
     reference::{AssetReferenceVc, AssetReferencesVc},
+    source_map::{GenerateSourceMap, GenerateSourceMapVc, SourceMapVc},
 };
 use turbopack_ecmascript::utils::FormatIter;
 use writer::{expand_imports, WriterWithIndent};
 
 use self::optimize::CssChunkOptimizerVc;
-use crate::{embed::CssEmbeddableVc, ImportAssetReferenceVc};
+use crate::{embed::CssEmbeddableVc, parse::ParseResultSourceMapVc, ImportAssetReferenceVc};
 
 #[turbo_tasks::value]
 pub struct CssChunk {
@@ -67,6 +71,68 @@ impl CssChunkVc {
             }
         }
         Ok(FileSystemPathOptionVc::cell(Some(current)))
+    }
+
+    #[turbo_tasks::function]
+    async fn chunk_content(self) -> Result<CssChunkContentVc> {
+        let this = self.await?;
+        let chunk_path = self.path();
+        Ok(CssChunkContentVc::new(
+            this.main_entries,
+            this.context,
+            chunk_path,
+        ))
+    }
+}
+
+#[turbo_tasks::value]
+struct CssChunkContent {
+    main_entries: CssChunkPlaceablesVc,
+    context: ChunkingContextVc,
+    chunk_path: FileSystemPathVc,
+}
+
+#[turbo_tasks::value_impl]
+impl CssChunkContentVc {
+    #[turbo_tasks::function]
+    async fn new(
+        main_entries: CssChunkPlaceablesVc,
+        context: ChunkingContextVc,
+        chunk_path: FileSystemPathVc,
+    ) -> Result<Self> {
+        Ok(CssChunkContent {
+            main_entries,
+            context,
+            chunk_path,
+        }
+        .cell())
+    }
+
+    #[turbo_tasks::function]
+    async fn code(self) -> Result<CodeVc> {
+        let this = self.await?;
+        let chunk_name = this.chunk_path.to_string();
+
+        let mut code = format!("/* chunk {} */\n", chunk_name.await?);
+
+        let mut writer = WriterWithIndent::new(&mut code);
+        for entry in this.main_entries.await?.iter() {
+            let entry_placeable = CssChunkPlaceableVc::cast_from(entry);
+            let entry_content = entry_placeable.as_chunk_item(this.context).content();
+
+            expand_imports(&mut writer, entry_content).await?;
+        }
+
+        let mut code_builder = CodeBuilder::default();
+        write!(code_builder, "{}", code);
+
+        Ok(code_builder.build())
+    }
+
+    #[turbo_tasks::function]
+    async fn content(self) -> Result<AssetContentVc> {
+        let code = self.code().await?;
+        Ok(File::from(code.source_code().clone()).into())
     }
 }
 
@@ -245,6 +311,14 @@ impl Asset for CssChunk {
     }
 }
 
+// #[turbo_tasks::value_impl]
+// impl GenerateSourceMap for CssChunk {
+//     #[turbo_tasks::function]
+//     fn generate_source_map(self_vc: CssChunkVc) -> SourceMapVc {
+//         self_vc.chunk_content().generate_source_map()
+//     }
+// }
+
 #[turbo_tasks::value]
 pub struct CssChunkContext {}
 
@@ -269,6 +343,7 @@ pub struct CssChunkPlaceables(Vec<CssChunkPlaceableVc>);
 pub struct CssChunkItemContent {
     pub inner_code: String,
     pub imports: Vec<(ImportAssetReferenceVc, CssChunkItemVc)>,
+    pub source_map: Option<ParseResultSourceMapVc>,
 }
 
 #[turbo_tasks::value_trait]

@@ -399,7 +399,9 @@ pub async fn start_server(options: &DevServerOptions) -> Result<()> {
 
     #[allow(unused_mut)]
     let mut server = NextDevServerBuilder::new(tt, dir, root_dir)
+        // .browserslist_query("chrome 50".into())
         .entry_request("src/index".into())
+        // .entry_request("src/index2".into())
         .eager_compile(options.eager_compile)
         .hostname(options.hostname)
         .port(options.port)

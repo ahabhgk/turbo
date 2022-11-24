@@ -137,7 +137,6 @@ impl Asset for EcmascriptModuleAsset {
 
     #[turbo_tasks::function]
     async fn references(self_vc: EcmascriptModuleAssetVc) -> Result<AssetReferencesVc> {
-        // dbg!(self_vc.as_value_debug().dbg().await?);
         Ok(self_vc.analyze().await?.references)
     }
 }
